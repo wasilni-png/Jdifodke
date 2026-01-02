@@ -5,8 +5,17 @@
 
 import logging
 import asyncio
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
+from telegram import Update
+from telegram.ext import (
+    Application, 
+    CommandHandler, 
+    MessageHandler, 
+    filters, 
+    CallbackQueryHandler, 
+    ContextTypes  # أضف هذا السطر ضروري جداً
+)
 from telegram.error import TelegramError
+
 
 from config import config
 from database.database import db_manager
