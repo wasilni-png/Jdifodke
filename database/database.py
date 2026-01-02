@@ -62,7 +62,7 @@ class DatabaseManager:
     def _create_tables(self):
         """إنشاء جداول قاعدة البيانات"""
         try:
-            Base.metadata.create_all(bind=self.engine)
+            Base.extra_data.create_all(bind=self.engine)
             logger.info("تم إنشاء/تحميل جداول قاعدة البيانات")
         except Exception as e:
             logger.error(f"فشل في إنشاء الجداول: {e}")
