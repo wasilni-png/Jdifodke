@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field # أضفنا field هنا
 from typing import List
 from dotenv import load_dotenv
 
@@ -9,12 +9,18 @@ load_dotenv()
 class BotConfig:
     """إعدادات البوت الأساسية"""
     BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
-    ADMIN_IDS: List[int] = [int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x]
+    # الحل هنا: استخدام default_factory لتوليد القائمة برمجياً عند الطلب
+    ADMIN_IDS: List[int] = field(default_factory=lambda: [
+        int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip().isdigit()
+    ])
     WEBHOOK_URL: str = os.getenv("WEBHOOK_URL", "")
-    
+
     @property
     def is_production(self) -> bool:
         return bool(self.WEBHOOK_URL)
+
+# باقي الكود (DatabaseConfig, PricingConfig, إلخ) يبقى كما هو
+# ولكن تأكد من تطبيق نفس المنطق على أي قائمة أو قاموس آخر مستقبلاً
 
 @dataclass
 class DatabaseConfig:
