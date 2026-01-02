@@ -1,0 +1,25 @@
+# Python Telegram Bot
+python-telegram-bot==20.7
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.13.1
+psycopg2-binary==2.9.9  # لـ PostgreSQL
+
+# الجغرافيا
+geopy==2.4.0
+
+# الإعدادات والبيئة
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# الأدوات
+redis==5.0.1  # للتخزين المؤقت
+aiohttp==3.9.1  # للطلبات غير المتزامنة
+
+# التطوير
+black==23.12.1
+flake8==7.0.0
+pytest==7.4.4
+pytest-asyncio==0.21.1
