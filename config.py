@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass, field # أضفنا field هنا
+from dataclasses import dataclass, field
 from typing import List
 from dotenv import load_dotenv
 
@@ -9,7 +9,6 @@ load_dotenv()
 class BotConfig:
     """إعدادات البوت الأساسية"""
     BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
-    # الحل هنا: استخدام default_factory لتوليد القائمة برمجياً عند الطلب
     ADMIN_IDS: List[int] = field(default_factory=lambda: [
         int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip().isdigit()
     ])
@@ -19,24 +18,21 @@ class BotConfig:
     def is_production(self) -> bool:
         return bool(self.WEBHOOK_URL)
 
-# باقي الكود (DatabaseConfig, PricingConfig, إلخ) يبقى كما هو
-# ولكن تأكد من تطبيق نفس المنطق على أي قائمة أو قاموس آخر مستقبلاً
-
 @dataclass
 class DatabaseConfig:
     """إعدادات قاعدة البيانات"""
-    # خيارات: sqlite, postgres
     DB_TYPE: str = os.getenv("DB_TYPE", "sqlite")
     DB_HOST: str = os.getenv("DB_HOST", "")
     DB_PORT: str = os.getenv("DB_PORT", "")
     DB_NAME: str = os.getenv("DB_NAME", "delivery_bot")
     DB_USER: str = os.getenv("DB_USER", "")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD", "")
-    
+
     @property
     def connection_string(self) -> str:
+        # ملاحظة: ريندر يفضل استخدام postgresql+psycopg2 لضمان عمل التعريفات
         if self.DB_TYPE == "postgres":
-            return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+            return f"postgresql+psycopg2://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         else:
             return f"sqlite:///{self.DB_NAME}.db"
 
@@ -45,7 +41,7 @@ class PricingConfig:
     """إعدادات التسعير"""
     BASE_FARE: float = float(os.getenv("BASE_FARE", "5.0"))
     RATE_PER_KM: float = float(os.getenv("RATE_PER_KM", "2.0"))
-    COMMISSION_RATE: float = float(os.getenv("COMMISSION_RATE", "0.2"))  # 20%
+    COMMISSION_RATE: float = float(os.getenv("COMMISSION_RATE", "0.2"))
     MINIMUM_FARE: float = float(os.getenv("MINIMUM_FARE", "10.0"))
 
 @dataclass
@@ -60,21 +56,20 @@ class LocationConfig:
     """إعدادات الموقع الجغرافي"""
     SEARCH_RADIUS_KM: float = float(os.getenv("SEARCH_RADIUS_KM", "10.0"))
     LOCATION_UPDATE_INTERVAL: int = int(os.getenv("LOCATION_UPDATE_INTERVAL", "30"))
-    EARTH_RADIUS_KM: float = 6371.0  # نصف قطر الأرض بالكيلومترات
+    EARTH_RADIUS_KM: float = 6371.0
 
 @dataclass
 class Config:
-    """التكوين الرئيسي الذي يجمع جميع الإعدادات"""
-    bot: BotConfig = BotConfig()
-    database: DatabaseConfig = DatabaseConfig()
-    pricing: PricingConfig = PricingConfig()
-    debt: DebtConfig = DebtConfig()
-    location: LocationConfig = LocationConfig()
-    
+    """التكوين الرئيسي - تم استخدام field لتجنب أخطاء Render"""
+    bot: BotConfig = field(default_factory=BotConfig)
+    database: DatabaseConfig = field(default_factory=DatabaseConfig)
+    pricing: PricingConfig = field(default_factory=PricingConfig)
+    debt: DebtConfig = field(default_factory=DebtConfig)
+    location: LocationConfig = field(default_factory=LocationConfig)
+
     def validate(self):
-        """التحقق من صحة الإعدادات"""
         if not self.bot.BOT_TOKEN:
-            raise ValueError("يجب تعيين BOT_TOKEN في ملف .env")
+            raise ValueError("يجب تعيين BOT_TOKEN في متغيرات البيئة")
         return True
 
 # إنشاء كائن التكوين العام
