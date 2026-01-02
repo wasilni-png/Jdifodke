@@ -172,7 +172,7 @@ class ChatMessage(Base):
     # المحتوى
     message_type = Column(String(20), default="text")  # text, location, image, etc.
     content = Column(Text, nullable=False)
-    metadata = Column(JSON)  # لحفظ معلومات إضافية
+    extra_data = Column(JSON)  # لحفظ معلومات إضافية
     
     # الحالة
     is_delivered = Column(Boolean, default=False)
