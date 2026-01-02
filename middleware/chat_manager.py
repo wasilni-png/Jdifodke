@@ -100,7 +100,7 @@ class ChatManager:
                 sender_id=user_id,
                 content=message_content,
                 message_type="text",
-                metadata={
+                extra_data={
                     'has_media': bool(update.message.photo or update.message.video or update.message.document),
                     'media_type': 'photo' if update.message.photo else 
                                  'video' if update.message.video else 
